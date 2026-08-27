@@ -1,4 +1,5 @@
 # Limbus Company Rental Team Monitor
+<img width="1012" height="762" alt="Snipaste_2026-08-27_20-27-42" src="https://github.com/user-attachments/assets/22c291c4-b05b-4244-9e9e-686325a5d9a3" />
 
 [English](#english) | [繁體中文](#繁體中文)
 
