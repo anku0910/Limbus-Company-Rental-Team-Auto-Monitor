@@ -299,12 +299,12 @@ class DiscordNotifier:
 
         payload = {
             "embeds": [{
-                # 【修改】完全中文化的標題與內容，搭配 Discord Timestamp
                 "title": "🗓️ 新一輪的鏡牢租借隊伍出來了！",
+                "url": "https://github.com/anku0910/limbus-rental-monitor", # 點擊標題就會開啟 GitHub
                 "description": f"**日期：** {team_data['date_timestamp']}\n**體系：** {team_data['keywords_zh']}",
                 "color": 0x654222,
                 "image": {"url": f"attachment://{image_path}"},
-                "footer": {"text": "Limbus Company Auto Monitor - Data:Limbus Company Wiki.gg"}
+                "footer": {"text": "Limbus Company Auto Monitor"}
             }]
         }
 
