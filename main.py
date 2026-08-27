@@ -304,7 +304,7 @@ class DiscordNotifier:
                 "description": f"**日期：** {team_data['date_timestamp']}\n**體系：** {team_data['keywords_zh']}",
                 "color": 0x654222,
                 "image": {"url": f"attachment://{image_path}"},
-                "footer": {"text": "Limbus Company Auto Monitor"}
+                "footer": {"text": "Limbus Company Auto Monitor - Data:Limbus Company Wiki.gg"}
             }]
         }
 
