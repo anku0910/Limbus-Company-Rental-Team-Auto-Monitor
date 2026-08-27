@@ -52,7 +52,7 @@ class WikiFetcher:
     def __init__(self):
         self.session = requests.Session()
         self.session.headers.update({
-            "User-Agent": "LimbusRentalMonitorBot/2.0 (Automated GitHub Actions Monitor)"
+            "User-Agent": "LimbusRentalMonitorBot/2.0 (Automated GitHub Actions Monitor; DiscordID:anku0910)"
         })
 
     def get_latest_wikitext(self) -> str:
