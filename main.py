@@ -88,7 +88,6 @@ class WikiFetcher:
             return None
             
         return pages[page_id]["imageinfo"][0]["url"]
-
 # ==========================================
 # 4. 解析器 (Parser)
 # ==========================================
@@ -100,6 +99,10 @@ class Parser:
         text = re.sub(r'<!--.*?-->', ' ', text, flags=re.DOTALL)
         text = re.sub(r'\[\[(?:[^|\]]+\|)?([^\]]+)\]\]', r'\1', text)
         
+        # 【強化】先移除所有帶有 StatusEffect 的模板，不管它有沒有完整閉合
+        text = re.sub(r'\{\{StatusEffect[^}]*\}\}', '', text, flags=re.IGNORECASE)
+        text = re.sub(r'\{\{StatusEffect[^|]*\|([^}|]+)[^}]*\}\}', r'\1', text, flags=re.IGNORECASE)
+        
         def template_replacer(match):
             parts = match.group(1).split('|')
             return parts[1] if len(parts) > 1 else parts[0]
@@ -107,6 +110,9 @@ class Parser:
         while "{{" in text and "}}" in text:
             text = re.sub(r'\{\{([^{}]+)\}\}', template_replacer, text)
             
+        # 清除殘留的孤立大括號或怪異符號
+        text = re.sub(r'[{}]', '', text)
+        
         text = re.sub(r'\s+', ' ', text)
         text = re.sub(r'\b([A-Za-z]+)\s+\1\b', r'\1', text, flags=re.IGNORECASE)
         
@@ -118,10 +124,16 @@ class Parser:
         if kw_str == "None":
             return "無"
         
-        # 切割後查字典，找不到就保持原樣，最後用中文字元「，」連接
-        kws = [k.strip() for k in kw_str.split(',')]
-        translated = [KW_TRANSLATION.get(k, k) for k in kws if k]
-        return "，".join(translated)
+        # 依逗號切割，順便過濾掉清不乾淨的殘渣字串
+        kws = [k.strip() for k in kw_str.split(',') if k.strip()]
+        translated = []
+        for k in kws:
+            # 如果裡面還夾雜奇怪的指令，直接跳過不翻譯
+            if "|" in k or "{" in k or "}" in k:
+                continue
+            translated.append(KW_TRANSLATION.get(k, k))
+            
+        return "，".join(translated) if translated else "無"
 
     @staticmethod
     def convert_to_discord_timestamp(date_str: str) -> str:
@@ -138,9 +150,8 @@ class Parser:
                 month_str, day_str, year_str = m.groups()
                 month = months.get(month_str)
                 if month:
-                    # 使用 UTC 中午 12 點作為基準，避免時區偏差導致日期少一天
                     dt = datetime.datetime(int(year_str), month, int(day_str), 12, 0, 0, tzinfo=datetime.timezone.utc)
-                    return f"<t:{int(dt.timestamp())}:D>" # :D 會在 Discord 顯示為「YYYY年M月D日」
+                    return f"<t:{int(dt.timestamp())}:D>"
             return s
             
         parts = date_str.split('-')
@@ -168,7 +179,6 @@ class Parser:
             else:
                 raw_kw_str = "None"
             
-            # 套用翻譯與 Timestamp 轉換
             discord_date = Parser.convert_to_discord_timestamp(raw_date_str)
             zh_keywords = Parser.translate_keywords(raw_kw_str)
             
@@ -190,7 +200,7 @@ class Parser:
                     "date_timestamp": discord_date,
                     "keywords_zh": zh_keywords,
                     "identities": identities[:12],
-                    "unique_id": f"{raw_date_str}-{raw_kw_str}" # 維持原始字串作為防重複 ID
+                    "unique_id": f"{raw_date_str}-{raw_kw_str}"
                 }
         return None
 
