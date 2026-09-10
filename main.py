@@ -26,7 +26,8 @@ KW_TRANSLATION = {
     "Charge": "充能",
     "Poise": "呼吸",
     "Bind": "束縛",
-    "Paralyze": "麻痺"
+    "Paralyze": "麻痺",
+    "Envy": "忌妒"
 }
 
 # ==========================================
